@@ -32,7 +32,7 @@ module.exports.signUp = async (req, res) => {
       let user = await UserModel.create({
         firstName: firstName,
         lastName: lastName,
-        mail: token.mail,
+        email: token.email,
         password: password,
         phone: phone,
         houseNumber: houseNumber,
@@ -52,10 +52,10 @@ module.exports.signUp = async (req, res) => {
 };
 
 module.exports.signIn = async (req, res) => {
-  const { mail, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await UserModel.login(mail, password);
+    const user = await UserModel.login(email, password);
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge });
     user.password = "";
@@ -73,7 +73,7 @@ module.exports.logout = (req, res) => {
 };
 
 exports.createAccount = async (req, res, next) => {
-  const { mail } = req.body;
+  const { email } = req.body;
   console.log("req", req.body);
   try {
     const resetToken = createToken(req.params.id);
@@ -86,11 +86,11 @@ exports.createAccount = async (req, res, next) => {
     `;
     try {
       await sendEmail({
-        to: mail,
+        to: email,
         subject: "lien pour creer un compte dans l'association",
         text: message,
       });
-      await TokenModel.create({ token: resetToken, mail: mail });
+      await TokenModel.create({ token: resetToken, mail: email });
       res.status(200).json({ success: true, data: "Email Sent" });
     } catch (err) {
       console.log(err);
@@ -102,9 +102,9 @@ exports.createAccount = async (req, res, next) => {
 };
 
 exports.forgotPassword = async (req, res, next) => {
-  const { mail } = req.body;
+  const { email } = req.body;
 
-  let user = await UserModel.findOne({ mail: mail }).exec();
+  let user = await UserModel.findOne({ email: email }).exec();
   console.log(user);
   if (!user) {
     res.status(400).send("Le mail n'existe pas");
@@ -119,7 +119,7 @@ exports.forgotPassword = async (req, res, next) => {
     `;
     try {
       await sendEmail({
-        to: mail,
+        to: email,
         subject: "Modification de votre mot de passe",
         text: message,
       });

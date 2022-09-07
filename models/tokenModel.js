@@ -8,7 +8,7 @@ const TokenSchema = new mongoose.Schema(
       required: true,
       max: 1024,
     },
-    mail: {
+    email: {
       type: String,
       validate: [isEmail],
       trim: true,

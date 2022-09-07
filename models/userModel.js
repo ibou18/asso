@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       minLength: 3,
       maxLength: 155,
     },
-    mail: {
+    email: {
       type: String,
       required: true,
       validate: [isEmail],
@@ -36,10 +36,10 @@ const userSchema = new mongoose.Schema(
       default: "image par defaut",
     },
 
-    houseNumber: { type: Number, maxlength: 1024 },
+    houseNumber: { type: Number, maxlength: 5 },
     nameAdress: { type: String, maxlength: 1024 },
     nameCity: { type: String, maxlength: 1024 },
-    postCode: { type: Number, maxlength: 5 },
+    postCode: { type: String, maxlength: 6 },
     coordX: { type: Number, maxlength: 1024 },
     coordY: { type: Number, maxlength: 1024 },
 
@@ -68,8 +68,8 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.statics.login = async function (mail, password) {
-  const user = await this.findOne({ mail });
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email });
   if (user) {
     const auth = await bcrypt.compare(password, user.password);
     if (auth) {

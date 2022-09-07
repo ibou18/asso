@@ -8,6 +8,7 @@ import ListUsers from "./admin/users/ListUsers";
 import SignupForm from "../src/admin/auth/SignupForm";
 import ListProfile from "./admin/profile/ListProfile";
 import ForgotPassword from "./admin/auth/ForgotPassword";
+import ResetPassword from "./admin/auth/ResetPassword";
 import Login from "./admin/auth/Login";
 import AddUserView from "./admin/users/AddUserView";
 import PrivateRoute from "./PrivateRoute";
@@ -43,6 +44,7 @@ const AdminRoute = () => {
         <Switch>
           <Route exact component={Login} path="/login" />
           <Route exact component={SignupForm} path="/signup/:token" />
+          <Route exact component={ResetPassword} path="/resetpassword/:token" />
           <Route exact component={ForgotPassword} path="/forgotpassword" />
         </Switch>
       )}

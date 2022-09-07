@@ -35,7 +35,7 @@ export default function Register(props) {
     // e.preventDefault();
     setLoading(true);
     let data = await register(formData);
-    console.log(data.error);
+    console.log("Data :>>", data.error);
     if (data.error?.status === 400) {
       setLoading(false);
       setOpen1(true);
@@ -57,7 +57,7 @@ export default function Register(props) {
               alt="Workflow"
             />
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Enregistrer vore compte !
+              Enregistrer votre compte !
             </h2>
           </div>
 

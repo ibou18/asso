@@ -14,6 +14,7 @@ const createToken = (id) => {
 };
 
 module.exports.signUp = async (req, res) => {
+  console.log("___TOKEN ____", req.params);
   const {
     firstName,
     lastName,
@@ -28,11 +29,10 @@ module.exports.signUp = async (req, res) => {
   console.log(req.body);
   try {
     if (token.token == req.params.token) {
-      console.log("le Token : ", token);
       let user = await UserModel.create({
         firstName: firstName,
         lastName: lastName,
-        email: token.email,
+        mail: token?.email,
         password: password,
         phone: phone,
         houseNumber: houseNumber,
@@ -47,21 +47,23 @@ module.exports.signUp = async (req, res) => {
     }
   } catch (err) {
     const errors = signUpErrors(err);
+    console.log("ERRUR ", err);
     res.status(401).send(errors);
   }
 };
 
 module.exports.signIn = async (req, res) => {
-  const { email, password } = req.body;
+  const { mail, password } = req.body;
 
   try {
-    const user = await UserModel.login(email, password);
+    const user = await UserModel.login(mail, password);
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge });
-    user.password = "";
+    // user.password = "";
     res.status(200).json({ user: user, assoc_token: token });
   } catch (err) {
     const errors = signInErrors(err);
+    console.log("err", err);
     res.status(401).json(errors);
   }
 };
@@ -69,11 +71,11 @@ module.exports.signIn = async (req, res) => {
 module.exports.logout = (req, res) => {
   res.cookie("jwt", "", { maxAge: 1 });
   // res.redirect("/");
-  res.status(201).json("deconnection");
+  res.status(201).json("Déconnection");
 };
 
 exports.createAccount = async (req, res, next) => {
-  const { email } = req.body;
+  const { mail } = req.body;
   console.log("req", req.body);
   try {
     const resetToken = createToken(req.params.id);
@@ -86,15 +88,15 @@ exports.createAccount = async (req, res, next) => {
     `;
     try {
       await sendEmail({
-        to: email,
+        to: mail,
         subject: "lien pour creer un compte dans l'association",
         text: message,
       });
-      await TokenModel.create({ token: resetToken, mail: email });
+      await TokenModel.create({ token: resetToken, email: mail });
       res.status(200).json({ success: true, data: "Email Sent" });
     } catch (err) {
       console.log(err);
-      return res.status(500).send("email non envoyer");
+      return res.status(500).send("mail non envoyer");
     }
   } catch (err) {
     next(err);
@@ -102,16 +104,16 @@ exports.createAccount = async (req, res, next) => {
 };
 
 exports.forgotPassword = async (req, res, next) => {
-  const { email } = req.body;
+  const { mail } = req.body;
 
-  let user = await UserModel.findOne({ email: email }).exec();
+  let user = await UserModel.findOne({ email: mail }).exec();
   console.log(user);
   if (!user) {
     res.status(400).send("Le mail n'existe pas");
   }
   try {
     const resetToken = createToken(user?._id);
-    const resetUrl = `http://localhost:3000/resetpassword/${resetToken}`;
+    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
     const message = `
       <h1>Votre lien de modification de votre mot de passe </h1>
       <p> ci dessous votre lien de modification : </p>
@@ -119,7 +121,7 @@ exports.forgotPassword = async (req, res, next) => {
     `;
     try {
       await sendEmail({
-        to: email,
+        to: mail,
         subject: "Modification de votre mot de passe",
         text: message,
       });
@@ -138,7 +140,7 @@ exports.forgotPassword = async (req, res, next) => {
       res.status(200).json({ success: true, data: "Email Sent" });
     } catch (err) {
       console.log(err);
-      return res.status(500).send("email non envoyer");
+      return res.status(500).send("mail non envoyer");
     }
   } catch (err) {
     next(err);

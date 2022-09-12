@@ -22,7 +22,9 @@ module.exports.verificationToken = async (req, res, next) => {
     return res.send(500).json({ message: "Vous etes pas autorise" });
   }
 };
+
 module.exports.requireAuth = (req, res, next) => {
+  console.log("req.cookies", req.cookies);
   const token = req.cookies.jwt ? req.cookies.jwt : req.headers.authorization;
   if (token) {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {

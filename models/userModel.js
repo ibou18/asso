@@ -17,12 +17,12 @@ const userSchema = new mongoose.Schema(
       minLength: 3,
       maxLength: 155,
     },
-    email: {
+    mail: {
       type: String,
       required: true,
       validate: [isEmail],
       lowercase: true,
-      unique: true,
+      unique: false,
       trim: true,
     },
     password: {
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
@@ -68,8 +68,8 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.statics.login = async function (email, password) {
-  const user = await this.findOne({ email });
+userSchema.statics.login = async function (mail, password) {
+  const user = await this.findOne({ mail });
   if (user) {
     const auth = await bcrypt.compare(password, user.password);
     if (auth) {
@@ -79,6 +79,7 @@ userSchema.statics.login = async function (email, password) {
   }
   throw Error("incorrect email");
 };
+
 userSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
 

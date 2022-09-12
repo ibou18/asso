@@ -22,12 +22,12 @@ const MeetingSchema = new mongoose.Schema(
           participantId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            required: false,
           },
           name: String,
         },
       ],
-      required: true,
+      required: false,
     },
     startAt: {
       type: String,
